@@ -1,11 +1,11 @@
 {
   "domain": "pinpaw",
   "name": "PinPaw Pet Tracker",
-  "codeowners": ["@PinPaw-pl"],
+  "codeowners": ["@PinPaw-io"],
   "config_flow": true,
-  "documentation": "https://github.com/PinPaw-pl/homeassistant-pinpaw",
+  "documentation": "https://github.com/PinPaw-io/homeassistant-pinpaw",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/PinPaw-pl/homeassistant-pinpaw/issues",
+  "issue_tracker": "https://github.com/PinPaw-io/homeassistant-pinpaw/issues",
   "requirements": [],
   "version": "0.1.0"
 }

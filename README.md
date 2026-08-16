@@ -24,9 +24,14 @@ Geofencing is intentionally **not** implemented here: exposing the pet as a
 ## Installation (HACS)
 
 1. HACS → Integrations → ⋮ → **Custom repositories**.
-2. Add this repository, category **Integration**.
+2. Add `https://github.com/PinPaw-io/homeassistant-pinpaw`, category
+   **Integration**.
 3. Install **PinPaw Pet Tracker**, restart Home Assistant.
 4. Settings → Devices & Services → **Add Integration** → *PinPaw*.
+
+> `PinPaw-io/homeassistant-pinpaw` is the canonical repository — please open
+> issues and pull requests there. A mirror is kept at
+> [`PinPaw-pl/homeassistant-pinpaw`](https://github.com/PinPaw-pl/homeassistant-pinpaw).
 
 ## Authentication
 
