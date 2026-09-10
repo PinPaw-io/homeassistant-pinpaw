@@ -16,6 +16,9 @@ PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
     Platform.NUMBER,
+    Platform.SWITCH,
+    Platform.SELECT,
+    Platform.BUTTON,
 ]
 
 type PinPawConfigEntry = ConfigEntry[PinPawCoordinator]

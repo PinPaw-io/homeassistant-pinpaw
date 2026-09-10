@@ -24,3 +24,22 @@ DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
 
 # Battery level (%) below which the "battery low" binary sensor turns on.
 LOW_BATTERY_THRESHOLD = 20
+
+# Tracking modes reported by the backend in ``trackingMode``.
+TRACKING_MODE_LIVE = "TRACKING"
+TRACKING_MODE_SLEEPING = "SAVING"
+TRACKING_MODE_DAILY = "DAILY"
+TRACKING_MODES = [TRACKING_MODE_LIVE, TRACKING_MODE_SLEEPING, TRACKING_MODE_DAILY]
+
+# Walk recording modes reported by the backend in ``walkRecordingMode``.
+WALK_MODE_AUTO = "AUTO"
+WALK_MODE_MANUAL = "MANUAL"
+
+# Device command types. Only the ones this integration sends are listed.
+CMD_LIVE_TRACKING = "LIVE_TRACKING"
+CMD_DEFAULT_TRACKING = "DEFAULT_TRACKING"
+CMD_SAVING_TRACKING = "SAVING_TRACKING"
+CMD_LED_ON = "LED_SWITCH_ON"
+CMD_LED_OFF = "LED_SWITCH_OFF"
+CMD_SOUND_ON = "SOUND_SWITCH_ON"
+CMD_SOUND_OFF = "SOUND_SWITCH_OFF"

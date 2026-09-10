@@ -18,6 +18,8 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import PinPawApiError, PinPawAuthError, PinPawClient
 from .const import (
+    CMD_LED_ON,
+    CMD_SOUND_ON,
     CONF_API_TOKEN,
     CONF_BASE_URL,
     CONF_USE_WEBSOCKET,
@@ -31,6 +33,10 @@ _LOGGER = logging.getLogger(__name__)
 
 # Position fields copied verbatim from a pushed frame into ``latestPosition``.
 _PUSH_FIELDS = ("latitude", "longitude", "batteryLevel", "charging", "online")
+
+# A pet gets the extra device-state fetch only if its tracker actually has the
+# hardware behind them; ``availableCommands`` is per device protocol.
+_DEVICE_STATE_COMMANDS = (CMD_LED_ON, CMD_SOUND_ON)
 
 
 class PinPawCoordinator(DataUpdateCoordinator[dict[int, dict[str, Any]]]):
@@ -68,7 +74,35 @@ class PinPawCoordinator(DataUpdateCoordinator[dict[int, dict[str, Any]]]):
         except PinPawApiError as err:
             raise UpdateFailed(f"Error fetching PinPaw data: {err}") from err
 
-        return {pet["id"]: pet for pet in pets if "id" in pet}
+        indexed = {pet["id"]: pet for pet in pets if "id" in pet}
+        await self._merge_device_states(indexed)
+        return indexed
+
+    async def _merge_device_states(self, pets: dict[int, dict[str, Any]]) -> None:
+        """Attach the LED/sound heartbeat snapshot under ``deviceState``.
+
+        Skipped entirely when no tracker on the account advertises the LED or
+        sound commands, so accounts that cannot use them pay no extra request.
+        A failure here is not fatal: the pet data is already in hand, and the
+        LED and sound switches simply read as unknown until the next poll.
+        """
+        if not any(
+            command in (pet.get("availableCommands") or [])
+            for pet in pets.values()
+            for command in _DEVICE_STATE_COMMANDS
+        ):
+            return
+
+        try:
+            states = await self.client.async_get_device_states()
+        except PinPawApiError as err:
+            _LOGGER.debug("Could not fetch PinPaw device states: %s", err)
+            return
+
+        for state in states:
+            pet = pets.get(state.get("petId"))
+            if pet is not None:
+                pet["deviceState"] = state
 
     def start_websocket(self) -> None:
         """Start the push listener (call after the first REST refresh)."""

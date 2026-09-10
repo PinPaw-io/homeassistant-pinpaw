@@ -33,18 +33,75 @@
   },
   "entity": {
     "device_tracker": {
-      "location": { "name": "Lokalizacja" }
+      "location": {
+        "name": "Lokalizacja"
+      }
     },
     "sensor": {
-      "battery": { "name": "Bateria" }
+      "battery": {
+        "name": "Bateria"
+      },
+      "tracking_mode": {
+        "name": "Tryb śledzenia",
+        "state": {
+          "tracking": "Na żywo",
+          "saving": "Uśpienie",
+          "daily": "Codzienny"
+        }
+      }
     },
     "binary_sensor": {
-      "online": { "name": "Online" },
-      "charging": { "name": "Ładowanie" },
-      "battery_low": { "name": "Niski poziom baterii" }
+      "online": {
+        "name": "Online"
+      },
+      "charging": {
+        "name": "Ładowanie"
+      },
+      "battery_low": {
+        "name": "Niski poziom baterii"
+      },
+      "lost": {
+        "name": "Zgłoszony jako zaginiony"
+      },
+      "device_disabled": {
+        "name": "Lokalizator zablokowany"
+      }
     },
     "number": {
-      "tracking_interval": { "name": "Interwał raportowania" }
+      "tracking_interval": {
+        "name": "Interwał raportowania"
+      }
+    },
+    "switch": {
+      "car_mode": {
+        "name": "Tryb samochodowy"
+      },
+      "walk_active": {
+        "name": "Nagrywanie spaceru"
+      },
+      "live_tracking": {
+        "name": "Śledzenie na żywo"
+      },
+      "led": {
+        "name": "Światło"
+      },
+      "sound": {
+        "name": "Dźwięk"
+      }
+    },
+    "select": {
+      "walk_recording_mode": {
+        "name": "Tryb nagrywania spacerów",
+        "state": {
+          "auto": "Automatyczny",
+          "manual": "Ręczny"
+        }
+      }
+    },
+    "button": {
+      "sleep_mode": {
+        "name": "Tryb uśpienia"
+      }
     }
   }
 }
