@@ -3,8 +3,8 @@
 Custom integration (HACS) for the [PinPaw](https://pinpaw.io) GPS pet tracker.
 
 > **Status: working — experimental.** The integration runs against a live
-> PinPaw backend — location, battery, charging, online status and the
-> reporting-interval control are all verified in Home Assistant. It is still
+> PinPaw backend — location, battery, charging, online status, the mode
+> controls and the reporting-interval control all work in Home Assistant. It is still
 > experimental, so bugs may surface; please report any issues.
 
 ## Features
@@ -16,10 +16,40 @@ Custom integration (HACS) for the [PinPaw](https://pinpaw.io) GPS pet tracker.
 | Online | `binary_sensor` (connectivity) | `deviceStatus` / `latestPosition.online` |
 | Charging | `binary_sensor` | `latestPosition.charging` |
 | Battery low | `binary_sensor` | `batteryLevel < 20%` (configurable in `const.py`) |
+| Reported lost | `binary_sensor` (problem) | `lost` |
+| Tracker blocked | `binary_sensor` (problem, disabled by default) | `deviceDisabled` |
+| Tracking mode | `sensor` (enum: live / sleeping / daily) | `trackingMode` |
 | Reporting interval | `number` (s) | `PUT /api/pets/{id}/tracking-interval` |
+| Car mode | `switch` | `PUT /api/pets/{id}/car-mode` |
+| Walk recording mode | `select` (automatic / manual) | `PUT /api/pets/{id}/walk-recording-mode` |
+| Walk recording | `switch` | `PUT /api/pets/{id}/walk-active` |
+| Live tracking | `switch` | `LIVE_TRACKING` / `DEFAULT_TRACKING` command |
+| Sleeping mode | `button` | `SAVING_TRACKING` command |
+| Light | `switch` | `LED_SWITCH_ON/OFF` command, state from `/api/device-states/my-pets` |
+| Sound | `switch` | `SOUND_SWITCH_ON/OFF` command, state from `/api/device-states/my-pets` |
 
 Geofencing is intentionally **not** implemented here: exposing the pet as a
 `device_tracker` lets Home Assistant's native Zones + automations handle it.
+
+### Modes
+
+**Walk recording** decides how walks get recorded. In *automatic* mode the
+tracker records continuously and the `Walk recording` switch is unavailable,
+because recording is not the user's to control there. In *manual* mode the
+switch starts and stops each walk by hand.
+
+**Car mode** suspends walk recording while the pet is riding along, so a drive
+does not land in the history as a very fast walk. Switching walk recording to
+manual clears car mode, which the backend does because a manual walk has no
+trip detection left for car mode to suppress.
+
+**Sleeping mode** is a button, not a switch, because it is one-way: waking a
+sleeping tracker happens over Bluetooth with the phone next to it and cannot be
+done through the API. The `Tracking mode` sensor shows when a device is asleep.
+
+**Light and sound** are only created for trackers whose protocol advertises
+them (`availableCommands`). Their state comes from the tracker's last
+heartbeat, so it can lag a few seconds behind the command.
 
 ## Installation (HACS)
 
@@ -70,6 +100,13 @@ versions the default icon is shown instead.
   enabled by default and can be turned off during setup. Pushed frames that
   carry a `petId` are applied instantly; other frames trigger a debounced REST
   refresh instead.
+- The LED and sound state lives only in `GET /api/device-states/my-pets`, which
+  is polled alongside `/api/pets` — but only when at least one tracker on the
+  account advertises those commands, so accounts that cannot use them pay no
+  extra request.
+- Commands are sent through the fire-and-forget endpoint rather than its
+  `/sync` variant, which blocks for up to 30 s waiting for the tracker to
+  acknowledge. The resulting state arrives with the next poll.
 
 ## Layout
 
@@ -79,13 +116,16 @@ custom_components/pinpaw/
 ├── api.py               # async REST client (Bearer PAT)
 ├── config_flow.py       # token + server URL setup
 ├── const.py             # domain, defaults, thresholds
-├── coordinator.py       # polls /api/pets, indexes by pet id, merges push
+├── coordinator.py       # polls /api/pets (+ /api/device-states), merges push
 ├── websocket.py         # optional real-time push listener
 ├── entity.py            # shared base entity + device info
 ├── device_tracker.py    # GPS location
-├── sensor.py            # battery %
-├── binary_sensor.py     # online / charging / battery low
+├── sensor.py            # battery %, tracking mode
+├── binary_sensor.py     # online / charging / battery low / lost / blocked
 ├── number.py            # reporting interval control
+├── switch.py            # car mode, walk recording, live tracking, light, sound
+├── select.py            # walk recording mode (automatic / manual)
+├── button.py            # sleeping mode (one-way)
 ├── manifest.json
 ├── strings.json
 └── translations/        # en, pl

@@ -33,18 +33,75 @@
   },
   "entity": {
     "device_tracker": {
-      "location": { "name": "Location" }
+      "location": {
+        "name": "Location"
+      }
     },
     "sensor": {
-      "battery": { "name": "Battery" }
+      "battery": {
+        "name": "Battery"
+      },
+      "tracking_mode": {
+        "name": "Tracking mode",
+        "state": {
+          "tracking": "Live",
+          "saving": "Sleeping",
+          "daily": "Daily"
+        }
+      }
     },
     "binary_sensor": {
-      "online": { "name": "Online" },
-      "charging": { "name": "Charging" },
-      "battery_low": { "name": "Battery low" }
+      "online": {
+        "name": "Online"
+      },
+      "charging": {
+        "name": "Charging"
+      },
+      "battery_low": {
+        "name": "Battery low"
+      },
+      "lost": {
+        "name": "Reported lost"
+      },
+      "device_disabled": {
+        "name": "Tracker blocked"
+      }
     },
     "number": {
-      "tracking_interval": { "name": "Reporting interval" }
+      "tracking_interval": {
+        "name": "Reporting interval"
+      }
+    },
+    "switch": {
+      "car_mode": {
+        "name": "Car mode"
+      },
+      "walk_active": {
+        "name": "Walk recording"
+      },
+      "live_tracking": {
+        "name": "Live tracking"
+      },
+      "led": {
+        "name": "Light"
+      },
+      "sound": {
+        "name": "Sound"
+      }
+    },
+    "select": {
+      "walk_recording_mode": {
+        "name": "Walk recording mode",
+        "state": {
+          "auto": "Automatic",
+          "manual": "Manual"
+        }
+      }
+    },
+    "button": {
+      "sleep_mode": {
+        "name": "Sleeping mode"
+      }
     }
   }
 }

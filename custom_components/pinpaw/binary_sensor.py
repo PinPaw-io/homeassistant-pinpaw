@@ -1,4 +1,4 @@
-"""Binary sensors for PinPaw pets: online, charging, battery low."""
+"""Binary sensors for PinPaw pets: online, charging, battery low, lost, blocked."""
 
 from __future__ import annotations
 
@@ -43,6 +43,19 @@ SENSORS: tuple[PinPawBinaryDescription, ...] = (
         translation_key="charging",
         device_class=BinarySensorDeviceClass.BATTERY_CHARGING,
         is_on=lambda pet, pos: pos.get("charging"),
+    ),
+    PinPawBinaryDescription(
+        key="lost",
+        translation_key="lost",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        is_on=lambda pet, pos: pet.get("lost"),
+    ),
+    PinPawBinaryDescription(
+        key="device_disabled",
+        translation_key="device_disabled",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_registry_enabled_default=False,
+        is_on=lambda pet, pos: pet.get("deviceDisabled"),
     ),
     PinPawBinaryDescription(
         key="battery_low",

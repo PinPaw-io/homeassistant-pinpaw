@@ -79,3 +79,44 @@ class PinPawClient:
             f"/api/pets/{pet_id}/tracking-interval",
             json={"trackingInterval": seconds},
         )
+
+    async def async_get_device_states(self) -> list[dict[str, Any]]:
+        """Return the last heartbeat snapshot for every visible pet.
+
+        ``GET /api/device-states/my-pets`` is the only place the LED and sound
+        state lives; ``/api/pets`` does not carry it. Devices that have never
+        sent a heartbeat are simply absent from the list.
+        """
+        return await self._request("GET", "/api/device-states/my-pets")
+
+    async def async_set_car_mode(self, pet_id: int, enabled: bool) -> None:
+        """Enable or disable car mode (walk recording suspended while driving)."""
+        await self._request(
+            "PUT", f"/api/pets/{pet_id}/car-mode", json={"enabled": enabled}
+        )
+
+    async def async_set_walk_recording_mode(self, pet_id: int, mode: str) -> None:
+        """Switch walk recording between ``AUTO`` and ``MANUAL``.
+
+        Switching to ``AUTO`` starts recording immediately; switching to
+        ``MANUAL`` stops it and clears car mode.
+        """
+        await self._request(
+            "PUT", f"/api/pets/{pet_id}/walk-recording-mode", json={"mode": mode}
+        )
+
+    async def async_set_walk_active(self, pet_id: int, enabled: bool) -> None:
+        """Start or stop walk recording. Only valid in ``MANUAL`` mode."""
+        await self._request(
+            "PUT", f"/api/pets/{pet_id}/walk-active", json={"enabled": enabled}
+        )
+
+    async def async_send_command(self, pet_id: int, command: str) -> None:
+        """Send a device command without waiting for the tracker to acknowledge it.
+
+        The backend also offers a ``/sync`` variant that blocks for up to 30
+        seconds waiting for the device's reply. Home Assistant only needs the
+        command to leave the building, and the authoritative state arrives with
+        the next poll, so the fire-and-forget endpoint is used instead.
+        """
+        await self._request("POST", f"/api/pets/{pet_id}/commands/{command}")

@@ -31,6 +31,15 @@ class PinPawEntity(CoordinatorEntity[PinPawCoordinator]):
         return self.pet.get("latestPosition") or {}
 
     @property
+    def device_state(self) -> dict[str, Any]:
+        """Return the pet's last heartbeat snapshot (LED and sound state)."""
+        return self.pet.get("deviceState") or {}
+
+    def supports_command(self, command: str) -> bool:
+        """Whether the tracker's protocol has a template for ``command``."""
+        return command in (self.pet.get("availableCommands") or [])
+
+    @property
     def available(self) -> bool:
         return super().available and self._pet_id in self.coordinator.data
 
